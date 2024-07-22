@@ -1,0 +1,8 @@
+
+执行生成构建命令：
+
+pyinstaller.exe --version-file=versioninfo.txt --add-data="ui-templates":"ui-templates" --add-data=./build.ico:. --icon build.ico --name tool --onefile --noconsole tool.py
+
+或者使用spec文件：
+
+pyinstaller.exe tool.spec

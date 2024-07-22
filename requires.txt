@@ -1,0 +1,14 @@
+requests==2.31.0
+loguru==0.7.2
+
+psutil==5.9.8
+
+PyQt5==5.15.9
+pyqt5-tools==5.15.9.3.3
+PySide2==5.15.2.1
+
+PySide6==6.6.2
+PyQt6==6.4.2
+pyqt6-tools==6.4.2.3.3
+
+pyinstaller==6.1.0
