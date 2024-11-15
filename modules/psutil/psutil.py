@@ -7,6 +7,7 @@
 
 
 import psutil
+from loguru import logger
 
 from common.helper.helper import *
 from modules.common.common import *
@@ -216,6 +217,18 @@ def kill_port(port):
     pass
 
 
+def get_process_list():
+    process_iter_list = list(psutil.process_iter())
+    process_list = []
+    for process in process_iter_list:
+        pid = process.pid  # 进程ID
+        name = process.name()  # 进程名
+        status = process.status()  # 进程状态
+        process_list.append({'pid': pid, 'name': name, 'status': status})
+    pass
+    return process_list
+
+
 # 结束和删除计划任务
 def del_task(task):
     try:
@@ -244,26 +257,6 @@ def task_exists(task):
         pass
     pass
     return False
-
-
-def get_process_list():
-    process_list = list(psutil.process_iter())
-    for process in process_list:
-        pid = process.pid
-        name = process.name()
-        status = process.status()
-        logger.debug(f"进程ID: {pid}, 进程名: {name}, 进程状态: {status}")
-    pass
-
-
-
-
-
-
-
-
-
-
 
 
 

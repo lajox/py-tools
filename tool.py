@@ -14,6 +14,8 @@ from environ import *
 from common.helper.helper import *
 from modules.common.common import *
 from modules.psutil.psutil import *
+from modules.crypt.crypt import *
+from modules.codegen.codegen import *
 
 # -----------------------------------------------------------------------------------------
 
@@ -42,12 +44,17 @@ class Stats:
         self.ui = ui_loader.load('ui-templates/tool.ui')
         # 设置窗口图标
         self.ui.setWindowIcon(main_icon)
-        self.ui.button_1.clicked.connect(lambda: self.todo('check_process'))  # 检测进程
-        self.ui.button_2.clicked.connect(lambda: self.todo('kill_process'))  # 结束进程
+        self.ui.button_1.clicked.connect(lambda: self.process_todo('check_process'))  # 检测进程
+        self.ui.button_2.clicked.connect(lambda: self.process_todo('kill_process'))  # 结束进程
         self.ui.button_3.clicked.connect(self.clearValue)
         self.ui.radioButton_1.clicked.connect(lambda: self.changeType(0))  # 端口
         self.ui.radioButton_2.clicked.connect(lambda: self.changeType(1))  # 进程
         self.ui.radioButton_3.clicked.connect(lambda: self.changeType(2))  # 计划任务
+        self.ui.button_md5.clicked.connect(lambda: self.calculate_md5())
+        self.ui.button_sha1.clicked.connect(lambda: self.calculate_sha1())
+        self.ui.button_base64_1.clicked.connect(lambda: self.calculate_base64_encode())
+        self.ui.button_base64_2.clicked.connect(lambda: self.calculate_base64_decode())
+        self.ui.button_gen_model.clicked.connect(lambda: self.generate_model_code())
         self._last_directory = ""
 
         # 使用信号和槽机制，线程之间安全地通信
@@ -78,7 +85,7 @@ class Stats:
             self.ui.button_2.setText('删除计划任务')
         pass
 
-    def todo(self, job):
+    def process_todo(self, job):
         self.clear()
         type = 0
         if self.ui.radioButton_1.isChecked():  # 端口
@@ -105,6 +112,57 @@ class Stats:
         self.task = TaskThread(target=run_check_process, args=tuple(arg), name=f'run-check-process')
         self.task.daemon = 1
         self.task.start()
+
+    def calculate_md5(self):
+        text = self.ui.lineEdit_origin.text()
+        md5_hash = md5(text)
+        self.ui.lineEdit_md5.setText(md5_hash)
+
+    def calculate_sha1(self):
+        text = self.ui.lineEdit_origin.text()
+        sha1_hash = sha1(text)
+        self.ui.lineEdit_sha1.setText(sha1_hash)
+
+    def calculate_base64_encode(self):
+        text = self.ui.plainTextEdit_base64_1.toPlainText()
+        try:
+            cal_str = base64encode(text)
+            self.ui.plainTextEdit_base64_2.setPlainText(cal_str)
+        except Exception as e:
+            logger.error(e)
+            self.ui.plainTextEdit_base64_1.setPlainText('')
+        pass
+
+    def calculate_base64_decode(self):
+        text = self.ui.plainTextEdit_base64_2.toPlainText()
+        try:
+            cal_str = base64decode(text)
+            self.ui.plainTextEdit_base64_1.setPlainText(cal_str)
+        except Exception as e:
+            logger.error(e)
+            self.ui.plainTextEdit_base64_1.setPlainText('')
+        pass
+
+    def generate_model_code(self):
+        text = self.ui.lineEdit_connect.text()
+        try:
+            # 检测软件是否安装
+            softname = 'sqlacodegen'
+            if not check_soft_install(softname):
+                message_box(f'{softname} 未安装，请先安装\n\n请先执行 pip install {softname} 进行安装')
+                return
+            pass
+            # 检测数据库是否连接
+            if not testing_mysql_connection(text):
+                message_box(f'数据库连接失败，请检查连接信息')
+                return
+            pass
+            gen_code = get_model_code(text)
+            self.ui.plainTextEdit_model_code.setPlainText(gen_code)
+        except Exception as e:
+            logger.error(e)
+            self.ui.plainTextEdit_model_code.setPlainText('')
+        pass
 
     def clearValue(self):
         self.ui.lineEdit_1.setText('')

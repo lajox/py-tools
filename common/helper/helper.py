@@ -11,6 +11,7 @@ import sys
 import random
 import re
 import hashlib
+import base64
 from urllib.parse import urlparse, parse_qs, urlencode
 import json
 import requests
@@ -184,12 +185,24 @@ def get_str_file_line_index(filepath, search_str=''):
 def md5(val):
     m = hashlib.md5()
     m.update(str(val).encode(encoding='utf-8'))
-    return m.hexdigest()
+    md5_hash = m.hexdigest()
+    # md5_hash = hashlib.md5(str(val).encode()).hexdigest()
+    return md5_hash
 
 def sha1(val):
     m = hashlib.sha1()
     m.update(str(val).encode(encoding='utf-8'))
-    return m.hexdigest()
+    sha1_hash = m.hexdigest()
+    # sha1_hash = hashlib.sha1(str(val).encode()).hexdigest()
+    return sha1_hash
+
+def base64encode(val):
+    base64_encode_str = base64.b64encode(str(val).encode('utf-8')).decode('utf-8')
+    return base64_encode_str
+
+def base64decode(val):
+    base64_decode_str = base64.b64decode(str(val).encode('utf-8')).decode('utf-8')
+    return base64_decode_str
 
 def get_url_not_param(url):
     url = url[0:url.find('?')] if url.find('?') > 0 else url
