@@ -50,7 +50,10 @@ def testing_mysql_connection(connection_string):
     try:
         logger.debug(f"connect_string: {connection_string}")
         logger.debug("Testing MySQL connection...")
+        # 解析连接字符串 mysql+pymysql://username:password@host/database
+        # 解析连接字符串 mysql://username:password@ip:port/db?charset=utf8mb4
         connection_string = connection_string.replace('mysql+pymysql://', 'http://')
+        connection_string = connection_string.replace('mysql://', 'http://')
         connection_string = connection_string if connection_string.startswith('http://') else 'http://' + connection_string
 
         url = urlparse(connection_string)
@@ -60,7 +63,8 @@ def testing_mysql_connection(connection_string):
         password = url.password
         hostname = url.hostname
         port = url.port if url.port else 3306  # 默认 MySQL 端口是 3306
-        database = url.path[1:]  # 去掉路径开头的 '/'
+        database = url.path[1:].split('?')[0]  # 去掉路径开头的 '/'
+        charset = url.query.split('=')[1] if 'charset=' in url.query else ''
 
         logger.debug((hostname, port, username, password, database))
 
@@ -70,7 +74,8 @@ def testing_mysql_connection(connection_string):
             user=username,
             password=password,
             database=database,
-            port=port
+            port=port,
+            charset=charset
         )
 
         logger.debug("Connection successful!")

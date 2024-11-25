@@ -31,10 +31,16 @@ def sha1(val):
 
 
 def base64encode(val):
-    base64_encode_str = base64.b64encode(str(val).encode('utf-8')).decode('utf-8')
-    return base64_encode_str
+    bytes_to_encode = str(val).encode('utf-8')
+    base64_bytes = base64.b64encode(bytes_to_encode)
+    transfer_str = base64_bytes.decode('utf-8')
+    # transfer_str = base64.b64encode(str(val).encode('utf-8')).decode('utf-8')
+    return transfer_str
 
 
 def base64decode(val):
-    base64_decode_str = base64.b64decode(str(val).encode('utf-8')).decode('utf-8')
-    return base64_decode_str
+    bytes_to_decode = str(val).encode('utf-8')
+    decoded_bytes = base64.b64decode(bytes_to_decode)
+    transfer_str = decoded_bytes.decode('utf-8')
+    # transfer_str = base64.b64decode(str(val).encode('utf-8')).decode('utf-8')
+    return transfer_str
